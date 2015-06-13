@@ -17,9 +17,8 @@ int main(int argc, char *argv[])
 	char* input = (char*)malloc(max); /* allocate buffer */
     	if (input == 0) exit(1); //There is no more memory to allocate so close the shell.
 
-	int w = 0; //just for a test currently.
   	//start a loop that will run until a user enters "exit"
-  	while(w < 3) // I don't want to be running an infinite loop yet.
+  	while(1) //will run forever unless we tell it to quit.
 	{
 		printf("breadpan$> "); //shell prompt
 
@@ -74,7 +73,6 @@ int main(int argc, char *argv[])
 		{
 			printError(); //not a valid command.
 		}	
-		w++; //Testing purposes.
 	}
 	exit(0); //safe exit at end of while loop.
 }
