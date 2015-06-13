@@ -56,6 +56,24 @@ int main(int argc, char *argv[])
         		i++;
     		}
 		
+		//no we have our input as a string, time to start parsing it out and switching between commands.
+		char * command = strtok(input, " ");
+		printf("\n command entered: %s \n", command);
+		//we can't use a switch because C is retarded.
+		//so here's our if else if bucket code
+		if(strcmp (command, "exit") == 0)
+		{
+			exit(0);
+		}
+		else if( strcmp ( command, "ls" ) == 0 )
+		{
+			//todo: ls functionality
+		}
+		//todo: enter in the rest of the these commands
+		else
+		{
+			printError(); //not a valid command.
+		}	
 		w++; //Testing purposes.
 	}
 	exit(0); //safe exit at end of while loop.
