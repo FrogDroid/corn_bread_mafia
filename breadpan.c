@@ -1,11 +1,27 @@
-//import necessary dependancies
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <assert.h>
+#include <ctype.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include "sort.h"
 
-//When the shell is started print breadpan$> to the screen as a shell prompt.
+//basic error handling from assignment sheet
+void printError(){
+	char error_message[30] = "An error has occurred\n";
+	write(STDERR_FILENO, error_message, strlen(error_message));
+}
 
-//Run a while loop that will wait for user input
-
-//if the input == 'exit' call exit(0);
-
-//if the input is an accepted command run the call for that command with the associated parameters
-
-//if the input is not recognized print an error message saying it is an unrecognized command
+int main(int argc, char *argv[])
+{
+	int max = 512; //the maximum string input length.
+  	//start a loop that will run until a user enters "exit"
+  	while(i < 3)
+	{
+		printf("breadpan$> ");
+		
+	}
+}
