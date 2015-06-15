@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
-
+#include <sys/wait.h>// import wait for prototyping
+#include <limits.h>
 //basic error handling from assignment sheet
 void printError(){
 	char error_message[30] = "An error has occurred\n";
@@ -66,9 +67,46 @@ int main(int argc, char *argv[])
 		}
 		else if( strcmp ( command, "ls" ) == 0 )
 		{
-			//todo: ls functionality
+			int i = 1;
+			int child = fork();
+			if(child == 0){
+				char *argv[6];//stack allocated array
+				argv[0] = strdup("/usr/bin/ls");
+				while(command !=NULL){
+					argv[i] = strdup(command);
+					i++;
+				}
+				argv[i] = NULL;// terminate command
+				execvp(argv[0],argv);
+				printf("execute failed in LS \n");//test for proper setup
+			}
+			
+			else if (child > 0){
+				wait(NULL);//wait until complete	
+			}
+
+			else {
+				perror("fork");//error
+			}
+
+			
+			
 		}
 		//todo: enter in the rest of the these commands
+		
+		else if( strcmp ( command, "wait" ) == 0 ){
+		
+
+		}
+
+		 else if( strcmp ( command, "pwd" ) == 0 ){
+			char *workDirectory;
+			char buff[PATH_MAX + 1];			
+			workDirectory= getcwd(buff,PATH_MAX+1);
+			printf("%s\n",workDirectory);
+                }
+
+		
 		else
 		{
 			printError(); //not a valid command.
