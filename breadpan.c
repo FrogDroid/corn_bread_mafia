@@ -12,6 +12,8 @@ void printError(){
 	write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
+void breadLs(char *input);
+
 int main(int argc, char *argv[])
 {
 	int max = 512; //the maximum string input length.
@@ -67,30 +69,7 @@ int main(int argc, char *argv[])
 		}
 		else if( strcmp ( command, "ls" ) == 0 )
 		{
-			int i = 1;
-			int child = fork();
-			if(child == 0){
-				char *argv[6];//stack allocated array
-				argv[0] = strdup("/usr/bin/ls");
-				while(command !=NULL){
-					argv[i] = strdup(command);
-					i++;
-				}
-				argv[i] = NULL;// terminate command
-				execvp(argv[0],argv);
-				printf("execute failed in LS \n");//test for proper setup
-			}
-			
-			else if (child > 0){
-				wait(NULL);//wait until complete	
-			}
-
-			else {
-				perror("fork");//error
-			}
-
-			
-			
+			breadLs(input);	
 		}
 		//todo: enter in the rest of the these commands
 		
@@ -113,4 +92,29 @@ int main(int argc, char *argv[])
 		}	
 	}
 	exit(0); //safe exit at end of while loop.
+}
+
+void breadLs(char *input){
+	 int i = 1;
+         int child = fork();
+         if(child == 0){
+	         char *argv[6];//stack allocated array
+        	 argv[0] = strdup("/usr/bin/ls");
+       		 while(command !=NULL){
+         		argv[i] = strdup( strtok(NULL, " ") );
+         		i++;
+         	}
+         	argv[i] = NULL;// terminate command
+         	execvp(argv[0],argv);
+         	printf("execute failed in LS \n");//test for proper setup
+         }
+
+         else if (child > 0){
+         	wait(NULL);//wait until complete        
+         }
+
+         else {
+         	perror("fork");//error
+         }
+
 }
