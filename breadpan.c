@@ -12,7 +12,7 @@ void printError(){
 	write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
-void breadLs(char *input);
+void breadLs(char *arguments[]);
 
 int main(int argc, char *argv[])
 {
@@ -61,6 +61,15 @@ int main(int argc, char *argv[])
 		//no we have our input as a string, time to start parsing it out and switching between commands.
 		char * command = strtok(input, " ");
 		printf("\n command entered: %s \n", command);
+
+		char *arguments[10];
+                int a = 1;
+                while(a < 10 && arguments[a] != NULL)
+                {
+                        arguments[a] = strtok( input, " " );
+                        a++;
+                }
+
 		//we can't use a switch because C is retarded.
 		//so here's our if else if bucket code
 		if(strcmp (command, "exit") == 0)
@@ -69,7 +78,7 @@ int main(int argc, char *argv[])
 		}
 		else if( strcmp ( command, "ls" ) == 0 )
 		{
-			breadLs(input);	
+			breadLs(arguments);	
 		}
 		//todo: enter in the rest of the these commands
 		
@@ -94,15 +103,17 @@ int main(int argc, char *argv[])
 	exit(0); //safe exit at end of while loop.
 }
 
-void breadLs(char *input){
+void breadLs(char *arguments[]){
 	 int i = 1;
+	 int j = 0;
          int child = fork();
          if(child == 0){
-	         char *argv[6];//stack allocated array
+	         char *argv[11];//stack allocated array
         	 argv[0] = strdup("/usr/bin/ls");
-       		 while(command !=NULL){
-         		argv[i] = strdup( strtok(NULL, " ") );
+       		 while(arguments[j] !=NULL){ //the arguments are in an array 1 shorter than the one we are building. i starts at 1 instead of 0
+         		argv[i] = arguments[j];
          		i++;
+         		j++;
          	}
          	argv[i] = NULL;// terminate command
          	execvp(argv[0],argv);
