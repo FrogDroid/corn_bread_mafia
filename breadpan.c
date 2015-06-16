@@ -60,14 +60,17 @@ int main(int argc, char *argv[])
 		
 		//no we have our input as a string, time to start parsing it out and switching between commands.
 		char * command = strtok(input, " ");
-		printf("\n command entered: %s \n", command);
+//		printf("\n command entered: %s \n", command);
 
 		char *arguments[10];
-                int a = 1;
-                while(a < 10 && arguments[a] != NULL)
+                int a = 0;
+		arguments[a] = strtok( NULL , " " );
+                while(arguments[a] != NULL)
                 {
-                        arguments[a] = strtok( input, " " );
                         a++;
+			if(a > 10)
+				break;
+                        arguments[a] = strtok( NULL , " " );
                 }
 
 		//we can't use a switch because C is retarded.
@@ -105,19 +108,21 @@ int main(int argc, char *argv[])
 
 void breadLs(char *arguments[]){
 	 int i = 1;
-	 int j = 0;
+	 int j = 1;
          int child = fork();
          if(child == 0){
 	         char *argv[11];//stack allocated array
-        	 argv[0] = strdup("/usr/bin/ls");
+        	 argv[0] = strdup("/bin/ls");
        		 while(arguments[j] !=NULL){ //the arguments are in an array 1 shorter than the one we are building. i starts at 1 instead of 0
          		argv[i] = arguments[j];
          		i++;
          		j++;
          	}
          	argv[i] = NULL;// terminate command
+         	printf("arg 1 = %s \n", arguments[1]);//test for proper setup
          	execvp(argv[0],argv);
-         	printf("execute failed in LS \n");//test for proper setup
+		printError();
+		exit(0);
          }
 
          else if (child > 0){
