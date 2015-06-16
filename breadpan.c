@@ -9,20 +9,18 @@
 
 //sorry about all the bad bread puns.
 #define BREAD_PAN 512
+#define BREAD_SLICE 16
+#define BREAD_SLICE_TOK " "
 //basic error handling from assignment sheet
-#define grepPat " \t\r\n\a" //defined a grep pattern
-#define buffer 64 //define buffer size
 void printError(){
 	char error_message[30] = "An error has occurred\n";
 	write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
-void breadLs(char *arguments[]);
-<<<<<<< Updated upstream
-char **parse(char *in);
-=======
+void breadLs(char **args);
+char **slice(char *in);
 char *bread_read();
->>>>>>> Stashed changes
+int  toast(char **args);
 
 int main(int argc, char *argv[])
 {
@@ -34,65 +32,15 @@ int main(int argc, char *argv[])
 		printf("breadpan$> "); //shell prompt
 
 		//no we have our input as a string, time to start parsing it out and switching between commands.
-<<<<<<< Updated upstream
-		char * command = strtok(input, grepPat);
 		//printf("\n command entered: %s \n", command);
-=======
 		input = bread_read();
-		char * command = strtok(input, " ");
-//		printf("\n command entered: %s \n", command);
 
-		char *arguments[10];
-                int a = 0;
-		arguments[a] = strtok( NULL , " " );
-                while(arguments[a] != NULL)
-                {
-                        a++;
-			if(a > 10)
-				break;
-                        arguments[a] = strtok( NULL , " " );
-                }
-
->>>>>>> Stashed changes
-		//we can't use a switch because C is retarded.
 		//so here's our if else if bucket code
-		char **args= parse(input);//create out array of strings to inpuit args...hoping this will work
-		if(strcmp (command, "exit") == 0)
-		{
-			exit(0);
-		}
-		else if( strcmp ( command, "ls" ) == 0 )
-		{
-			breadLs(args);	
-		}
-		//todo: enter in the rest of the these commands
-		
-		else if( strcmp ( command, "wait" ) == 0 ){
-		
-
-		}
-
-		 else if( strcmp ( command, "pwd" ) == 0 ){
-			char *workDirectory;
-			char buff[PATH_MAX + 1];			
-			workDirectory= getcwd(buff,PATH_MAX+1);
-			printf("%s\n",workDirectory);
-                }
-
-		 else if( strcmp ( command, "cd" ) == 0 ){
-               	       
-				if(args[1]==NULL){
-                                chdir(getenv("HOME"));
-                        }
-                        else{
-                        	chdir(args[1]); 
-                        }
-                }
-	
-		else
-		{
-			printError(); //not a valid command.
-		}	
+		char **args= slice(input);//create out array of strings to inpuit args...hoping this will work
+		toast(args);
+		//let's free up those buffers.
+		free(input);
+		free(args);
 	}
 	exit(0); //safe exit at end of while loop.
 }
@@ -126,38 +74,36 @@ void breadLs(char **arguments){ //changed this to accept array of strings
 
 }
 
-<<<<<<< Updated upstream
-
-char **parse(char *in){ //function to parse the input into an array of strings
-	int argbuffer= buffer; //buffer
+char **slice(char *in){ //function to parse the input into an array of strings
+	int slices = BREAD_SLICE; //buffer
 	char *argument; //string
-        char **arguments=malloc(argbuffer * sizeof(char*)); //array of string allocated via malloc
+        char **arguments=malloc(slices * sizeof(char*)); //array of string allocated via malloc
         int a = 0; //counter
 	if (!arguments) { //check for array of strings setup
        		printf("allocation error\n");
                 exit(EXIT_FAILURE);
        	}
 
-      	argument= strtok(in, grepPat);//read string into array
-      	while(argument!= NULL) //while not null read
+      	argument= strtok(in, BREAD_SLICE_TOK);//read string into array
+      	while(argument != NULL) //while not null read
       	{	
 
         	arguments[a] = argument; //read into array of strings
         	a++;
-		if (a >=argbuffer) { //make buffer larger if needed
-     			 argbuffer += buffer;
-     			 arguments = realloc(arguments, argbuffer * sizeof(char*));
+		if (a >= slices) { //make buffer larger if needed
+     			 slices += BREAD_SLICE;
+     			 arguments = realloc(arguments, slices * sizeof(char*));
      			 if (!arguments) {
-       			 exit(EXIT_FAILURE);
+       			 	exit(EXIT_FAILURE);
      			 }
   		 }
-        	argument = strtok(NULL, grepPat);//next token
+        	argument = strtok(NULL, BREAD_SLICE_TOK);//next token
      	 }
      	arguments[a]=NULL;//set last to null
 	return arguments; //return array of strings	
 
 }
-=======
+
 char * bread_read()
 {
 	int max = BREAD_PAN;
@@ -201,4 +147,42 @@ char * bread_read()
 	return input;
 }
 
->>>>>>> Stashed changes
+int toast(char **args){
+	char * command = args[0];	
+	if(strcmp (command, "exit") == 0)
+        {
+                exit(0);
+        }
+        else if( strcmp ( command, "ls" ) == 0 )
+        {
+                breadLs(args);
+        }
+        //todo: enter in the rest of the these commands
+
+        else if( strcmp ( command, "wait" ) == 0 ){
+
+        }
+
+        else if( strcmp ( command, "pwd" ) == 0 ){
+        	 char *workDirectory;
+	         char buff[PATH_MAX + 1];
+                 workDirectory= getcwd(buff,PATH_MAX+1);
+                 printf("%s\n",workDirectory);
+        }
+
+        else if( strcmp ( command, "cd" ) == 0 ){
+
+                  if(args[1]==NULL){
+                      chdir(getenv("HOME"));
+                  }
+                  else{
+                      chdir(args[1]);
+                  }
+        }
+
+        else
+        {
+              printError(); //not a valid command.
+        }
+	return 0;
+}
