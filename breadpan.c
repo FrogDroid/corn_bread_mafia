@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
 
 		//so here's our if else if bucket code
 		char **args= slice(input);//create out array of strings to inpuit args...hoping this will work
-printf("\n%s\n", args[0]);
 		status = toast(args);
 		//let's free up those buffers.
 		free(input);
@@ -100,42 +99,35 @@ char **slice(char *in){ //function to parse the input into an array of strings
 char * bread_read()
 {
 	int max = BREAD_PAN;
-	char * input = malloc(max);
+	char * input = malloc(sizeof(char) * max);
+	int c;
+	int position = 0;
 	if(input == 0){
  		exit(1); //out of memory.
  	}
- 	/**
-         * See see http://stackoverflow.com/questions/7831755/what-is-the-simplest-way-of-getting-user-input-in-c/
-         * for a discussion on the best practices for reading input. They show how to handle dynamic memory allocation which we will be implementing for 
-         * correctness.
-         */
- 
- 	while (1)
- 	{ /* skip leading whitespace */
- 		int c = getchar();
- 		if (c == EOF) break; /* end of file */
- 		if (!isspace(c)) {
- 			ungetc(c, stdin);
- 			break;
- 		}
- 	}
- 
- 	int i = 0;
- 	while (1)
- 	{
- 		int c = getchar();
- 		if (isspace(c) || c == EOF) { /* at end, add terminating zero */
- 			input[i] = 0;
- 			break;
- 		}
- 		input[i] = c;
- 		if (i == max) { /* buffer full */
- 			printError();
- 			free(input);
- 			exit(1);
- 		}
- 		i++;
- 	}
+	while (1) {
+    	// Read a character
+    		c = getchar();
+
+   	 // If we hit EOF, replace it with a null character and return.
+   		 if (c == EOF || c == '\n') {
+      			input[position] = '\0';
+      			return input;
+    		} else {
+      			input[position] = c;
+    		}
+    		position++;
+
+    	// If we have exceeded the buffer, reallocate.
+    		if (position >= max) {
+      			max += BREAD_PAN;
+      			input = realloc(input, max);
+      			if (!input) {
+				printError();
+        			exit(EXIT_FAILURE);
+      			}
+    		}
+  	} 
 	return input;
 }
 
@@ -174,7 +166,7 @@ int toast(char **args){
         }
 	
 	else if(command == NULL){
-		return 0;
+		return 1;
 	}
 
         else
