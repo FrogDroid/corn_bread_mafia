@@ -37,25 +37,24 @@ int main(int argc, char *argv[])
 		input = bread_read();
 
 		//so here's our if else if bucket code
-printf("parsing args \n");
 		char **args= slice(input);//create out array of strings to inpuit args...hoping this will work
-printf("args parsed \n");
+printf("\n%s\n", args[0]);
 		status = toast(args);
 		//let's free up those buffers.
 		free(input);
 		free(args);
 	}while(status);
-	exit(0); //safe exit at end of while loop.
+	return 0;//safe exit at end of while loop.
 }
 
 int breadLs(char **arguments){ //changed this to accept array of strings
 	 int status;
          int child = fork();
          if(child == 0){
-		printf("ls called \n");
 		//child
        	//	arguments[0] = strdup("/bin/ls");
-         	if(execvp(arguments[0], arguments)  == -1) printError();
+         	if(execvp(arguments[0], arguments)  == -1) 
+			return 0;
          }
          else if (child > 0){
         	 do {
@@ -80,10 +79,8 @@ char **slice(char *in){ //function to parse the input into an array of strings
        	}
 
       	argument= strtok(in, BREAD_SLICE_TOK);//read string into array
-	//printf("argument> %s \n", argument);
       	while(argument != NULL) //while not null read
       	{	
-	//	printf("argument> %s \n", argument);
         	arguments[a] = argument; //read into array of strings
         	a++;
 		if (a >= slices) { //make buffer larger if needed
@@ -105,46 +102,46 @@ char * bread_read()
 	int max = BREAD_PAN;
 	char * input = malloc(max);
 	if(input == 0){
-		exit(1); //out of memory.
-	}
-	/**
-        * See see http://stackoverflow.com/questions/7831755/what-is-the-simplest-way-of-getting-user-input-in-c/
-        * for a discussion on the best practices for reading input. They show how to handle dynamic memory allocation which we will be implementing for 
-        * correctness.
-        */
-
-	while (1)
-	{ /* skip leading whitespace */
-		int c = getchar();
-		if (c == EOF) break; /* end of file */
-		if (!isspace(c)) {
-			ungetc(c, stdin);
-			break;
-		}
-	}
-
-	int i = 0;
-	while (1)
-	{
-		int c = getchar();
-		if (isspace(c) || c == EOF) { /* at end, add terminating zero */
-			input[i] = 0;
-			break;
-		}
-		input[i] = c;
-		if (i == max) { /* buffer full */
-			printError();
-			free(input);
-			exit(1);
-		}
-		i++;
-	}
-
+ 		exit(1); //out of memory.
+ 	}
+ 	/**
+         * See see http://stackoverflow.com/questions/7831755/what-is-the-simplest-way-of-getting-user-input-in-c/
+         * for a discussion on the best practices for reading input. They show how to handle dynamic memory allocation which we will be implementing for 
+         * correctness.
+         */
+ 
+ 	while (1)
+ 	{ /* skip leading whitespace */
+ 		int c = getchar();
+ 		if (c == EOF) break; /* end of file */
+ 		if (!isspace(c)) {
+ 			ungetc(c, stdin);
+ 			break;
+ 		}
+ 	}
+ 
+ 	int i = 0;
+ 	while (1)
+ 	{
+ 		int c = getchar();
+ 		if (isspace(c) || c == EOF) { /* at end, add terminating zero */
+ 			input[i] = 0;
+ 			break;
+ 		}
+ 		input[i] = c;
+ 		if (i == max) { /* buffer full */
+ 			printError();
+ 			free(input);
+ 			exit(1);
+ 		}
+ 		i++;
+ 	}
 	return input;
 }
 
 int toast(char **args){
 	char * command = args[0];	
+//	printf("\n%s\n", command);
 	if(strcmp (command, "exit") == 0)
         {
 		return 0;
@@ -175,6 +172,10 @@ int toast(char **args){
                       chdir(args[1]);
                   }
         }
+	
+	else if(command == NULL){
+		return 0;
+	}
 
         else
         {
