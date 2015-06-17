@@ -17,7 +17,7 @@ void printError(){
 	write(STDERR_FILENO, error_message, strlen(error_message));
 }
 
-void breadLs(char **args);
+int breadLs(char **args);
 char **slice(char *in);
 char *bread_read();
 int  toast(char **args);
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 printf("parsing args \n");
 		char **args= slice(input);//create out array of strings to inpuit args...hoping this will work
 printf("args parsed \n");
-		toast(args);
+		status = toast(args);
 		//let's free up those buffers.
 		free(input);
 		free(args);
@@ -48,7 +48,7 @@ printf("args parsed \n");
 	exit(0); //safe exit at end of while loop.
 }
 
-void breadLs(char **arguments){ //changed this to accept array of strings
+int breadLs(char **arguments){ //changed this to accept array of strings
 	 int status;
          int child = fork();
          if(child == 0){
@@ -61,11 +61,12 @@ void breadLs(char **arguments){ //changed this to accept array of strings
         	 do {
      			 waitpid(child, &status, WUNTRACED);
     		} while (!WIFEXITED(status) && !WIFSIGNALED(status));        
+		return 1;
          }
          else {
          	perror("fork");//error
          }
-
+	return 1;
 }
 
 char **slice(char *in){ //function to parse the input into an array of strings
@@ -146,11 +147,11 @@ int toast(char **args){
 	char * command = args[0];	
 	if(strcmp (command, "exit") == 0)
         {
-                exit(0);
+		return 0;
         }
         else if( strcmp ( command, "ls" ) == 0 )
         {
-                breadLs(args);
+              return breadLs(args);
         }
         //todo: enter in the rest of the these commands
 
@@ -179,5 +180,5 @@ int toast(char **args){
         {
               printError(); //not a valid command.
         }
-	return 0;
+	return 1; //exit by default
 }
