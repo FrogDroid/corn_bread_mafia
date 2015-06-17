@@ -25,9 +25,10 @@ int  toast(char **args);
 int main(int argc, char *argv[])
 {
 	char* input; /* allocate buffer */
+	int status = 0;
 
   	//start a loop that will run until a user enters "exit"
-  	while(1) //will run forever unless we tell it to quit.
+  	do //will run forever unless we tell it to quit.
 	{
 		printf("breadpan$> "); //shell prompt
 
@@ -36,38 +37,31 @@ int main(int argc, char *argv[])
 		input = bread_read();
 
 		//so here's our if else if bucket code
+printf("parsing args \n");
 		char **args= slice(input);//create out array of strings to inpuit args...hoping this will work
+printf("args parsed \n");
 		toast(args);
 		//let's free up those buffers.
 		free(input);
 		free(args);
-	}
+	}while(status);
 	exit(0); //safe exit at end of while loop.
 }
 
 void breadLs(char **arguments){ //changed this to accept array of strings
-	 int i = 1;
-	 int j = 1;
+	 int status;
          int child = fork();
          if(child == 0){
-	         char *argv[11];//stack allocated array
-        	 argv[0] = strdup("/bin/ls");
-       		 while(arguments[j] !=NULL){ //the arguments are in an array 1 shorter than the one we are building. i starts at 1 instead of 0
-         		argv[i] = arguments[j];
-         		i++;
-         		j++;
-         	}
-         	argv[i] = NULL;// terminate command
-         	printf("arg 1 = %s \n", arguments[1]);//test for proper setup
-         	execvp(argv[0],argv);
-		printError();
-		exit(0);
+		printf("ls called \n");
+		//child
+       	//	arguments[0] = strdup("/bin/ls");
+         	if(execvp(arguments[0], arguments)  == -1) printError();
          }
-
          else if (child > 0){
-         	wait(NULL);//wait until complete        
+        	 do {
+     			 waitpid(child, &status, WUNTRACED);
+    		} while (!WIFEXITED(status) && !WIFSIGNALED(status));        
          }
-
          else {
          	perror("fork");//error
          }
@@ -85,9 +79,10 @@ char **slice(char *in){ //function to parse the input into an array of strings
        	}
 
       	argument= strtok(in, BREAD_SLICE_TOK);//read string into array
+	//printf("argument> %s \n", argument);
       	while(argument != NULL) //while not null read
       	{	
-
+	//	printf("argument> %s \n", argument);
         	arguments[a] = argument; //read into array of strings
         	a++;
 		if (a >= slices) { //make buffer larger if needed
