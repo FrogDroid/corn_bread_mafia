@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 }
 
 int breadLs(char **arguments){ //changed this to accept array of strings
-	 int status;
+	 //int status;
          int child = fork();
          if(child == 0){
 		//child
@@ -56,9 +56,9 @@ int breadLs(char **arguments){ //changed this to accept array of strings
 			return 0;
          }
          else if (child > 0){
-        	 do {
-     			 waitpid(child, &status, WUNTRACED);
-    		} while (!WIFEXITED(status) && !WIFSIGNALED(status));        
+//        	 do {
+  //   			 waitpid(child, &status, WUNTRACED);
+    //		} while (!WIFEXITED(status) && !WIFSIGNALED(status));        
 		return 1;
          }
          else {
@@ -145,7 +145,7 @@ int toast(char **args){
         //todo: enter in the rest of the these commands
 
         else if( strcmp ( command, "wait" ) == 0 ){
-
+		wait(NULL);
         }
 
         else if( strcmp ( command, "pwd" ) == 0 ){
